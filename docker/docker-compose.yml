@@ -15,7 +15,7 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -52,7 +52,7 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - ./data/bitnami/redis:/bitnami/redis/data:rw,Z
+      - redis_data:/bitnami/redis/data:rw,Z
     command: >
       bash -c "
         /opt/bitnami/scripts/redis/setup.sh
@@ -197,8 +197,8 @@ services:
     ports:
       - '9200:9200'
     volumes:
-      - ./data/bitnami/elasticsearch:/bitnami/elasticsearch/data
-      - ./volumes/elasticsearch/elasticsearch.yml:/opt/bitnami/elasticsearch/config/my_elasticsearch.yml
+      - elasticsearch_data:/bitnami/elasticsearch/data
+      - ./volumes/elasticsearch/elasticsearch.yml:/tmp/my_elasticsearch.yml
       - ./volumes/elasticsearch/analysis-smartcn.zip:/opt/bitnami/elasticsearch/analysis-smartcn.zip:rw,Z
     healthcheck:
       test:
@@ -219,6 +219,8 @@ services:
         # Set proper permissions for data directories
         chown -R elasticsearch:elasticsearch /bitnami/elasticsearch/data
         chmod g+s /bitnami/elasticsearch/data
+
+        cp /tmp/my_elasticsearch.yml /opt/bitnami/elasticsearch/config/my_elasticsearch.yml
 
         # Create plugin directory
         mkdir -p /bitnami/elasticsearch/plugins;
@@ -571,3 +573,8 @@ services:
 networks:
   coze-network:
     driver: bridge
+
+volumes:
+  mysql_data:
+  elasticsearch_data:
+  redis_data:
